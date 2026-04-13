@@ -3,10 +3,12 @@
 import pytest
 import warnings
 from mock import Mock, call, patch
+from thefuck import __version__
 from thefuck.utils import default_settings, \
     memoize, get_closest, get_all_executables, replace_argument, \
     get_all_matched_commands, is_app, for_app, cache, \
-    get_valid_history_without_current, _cache, get_close_matches
+    get_valid_history_without_current, _cache, get_close_matches, \
+    get_installation_version
 from thefuck.types import Command
 
 
@@ -27,6 +29,10 @@ def test_memoize():
     memoized()
     memoized()
     fn.assert_called_once_with()
+
+
+def test_get_installation_version():
+    assert get_installation_version() == __version__
 
 
 @pytest.mark.usefixtures('no_memoize')
@@ -234,6 +240,7 @@ class TestCache(object):
         assert shelve == {key: {'etag': '0', 'value': 'test'}}
 
 
+@pytest.mark.usefixtures('no_memoize')
 class TestGetValidHistoryWithoutCurrent(object):
     @pytest.fixture(autouse=True)
     def fail_on_warning(self):
