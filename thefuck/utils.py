@@ -8,6 +8,7 @@ import six
 from decorator import decorator
 from difflib import get_close_matches as difflib_get_close_matches
 from functools import wraps
+from . import __version__
 from .logs import warn, exception
 from .conf import settings
 from .system import Path
@@ -296,13 +297,17 @@ cache.disabled = False
 
 def get_installation_version():
     try:
-        from importlib.metadata import version
-
-        return version('thefuck')
+        from importlib.metadata import PackageNotFoundError, version
     except ImportError:
-        import pkg_resources
+        try:
+            from importlib_metadata import PackageNotFoundError, version
+        except ImportError:
+            return __version__
 
-        return pkg_resources.require('thefuck')[0].version
+    try:
+        return version('thefuck')
+    except PackageNotFoundError:
+        return __version__
 
 
 def get_alias():
